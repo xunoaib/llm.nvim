@@ -7,14 +7,16 @@ local M = {
 
 local function accept_suggestion()
   if not completion.suggestion or not completion.shown_suggestion then
-    return
+    local accept_keymap = config.get().accept_keymap
+    return vim.api.nvim_replace_termcodes(accept_keymap, true, false, true)
   end
   vim.schedule(completion.complete)
 end
 
 local function dismiss_suggestion()
   if not completion.suggestion or not completion.shown_suggestion then
-    return
+    local dismiss_keymap = config.get().accept_keymap
+    return vim.api.nvim_replace_termcodes(dismiss_keymap, true, false, true)
   end
   vim.schedule(function()
     completion.cancel()
