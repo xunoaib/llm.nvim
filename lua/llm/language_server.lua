@@ -214,7 +214,7 @@ function M.setup()
   local capabilities = vim.lsp.protocol.make_client_capabilities()
   capabilities.general.positionEncodings = { "utf-16" }
 
-  local client_id = lsp.start_client({
+  local client_id = lsp.start({
     name = "llm-ls",
     cmd = cmd,
     cmd_env = config.get().lsp.cmd_env,
