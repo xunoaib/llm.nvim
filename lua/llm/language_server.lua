@@ -115,7 +115,12 @@ function M.get_completions(callback)
   end
 
   local client = lsp.get_client_by_id(M.client_id)
-  local offset_encoding = client and client.offset_encoding or "utf-16"
+
+  if not client or client:is_stopped() then
+    return
+  end
+
+  local offset_encoding = client.offset_encoding or "utf-16"
   local params = lsp.util.make_position_params(0, offset_encoding)
 
   params.model = utils.get_model()
@@ -211,12 +216,17 @@ function M.setup()
   api.nvim_create_autocmd({ "FileType", "BufEnter" }, {
     group = augroup,
     pattern = config.get().enable_suggestions_on_files or "*",
-    callback = function()
+    callback = function(args)
+      if vim.bo[args.buf].buftype ~= "" then
+        return
+      end
+
       local client_id = vim.lsp.start({
         name = "llm-ls",
         cmd = cmd,
         cmd_env = config.get().lsp.cmd_env,
-        root_dir = vim.fs.root(0, { ".git" }),
+        root_dir = vim.fs.root(args.buf, { ".git", "package.json", "pyproject.toml" }),
+        settings = {},
       })
 
       if client_id then
