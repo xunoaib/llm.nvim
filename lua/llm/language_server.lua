@@ -114,7 +114,10 @@ function M.get_completions(callback)
     return
   end
 
-  local params = lsp.util.make_position_params()
+  local client = lsp.get_client_by_id(M.client_id)
+  local offset_encoding = client and client.offset_encoding or "utf-16"
+  local params = lsp.util.make_position_params(0, offset_encoding)
+
   params.model = utils.get_model()
   params.backend = config.get().backend
   params.url = utils.get_url()
